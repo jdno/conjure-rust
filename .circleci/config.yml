@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@1.0.0
+
+jobs:
+  windows:
+    executor: win/vs2019
+    steps:
+      - run: Copy-Item C:\Windows\notepad.exe -Destination .\test
+      - persist_to_workspace:
+          root: .
+          paths: test
+
+  linux:
+    docker: [{ image: "rust:1.37.0" }]
+    steps:
+      - attach_workspace: { at: / }
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - windows
+      - linux:
+          requires: [windows]
